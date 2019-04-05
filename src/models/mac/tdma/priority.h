@@ -67,6 +67,7 @@ namespace EMANE
             u8Queue = 3;
           }
 
+        u8Queue = 0;
         return u8Queue;
       }
     }
