@@ -42,6 +42,7 @@
 #include "emane/models/tdma/packetstatuspublisheruser.h"
 
 #include <tuple>
+#include <map>
 
 namespace EMANE
 {
@@ -110,6 +111,8 @@ namespace EMANE
          * @return A list of QueueInfo entries.
          */
         virtual QueueInfos getPacketQueueInfo() const = 0;
+
+        virtual std::map<std::uint64_t, size_t> getDestQueueLength(int priority) const = 0;
 
       protected:
         NEMId id_;
