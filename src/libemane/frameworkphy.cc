@@ -38,6 +38,7 @@
 #include "emane/spectrumserviceexception.h"
 
 #include "emane/utils/conversionutils.h"
+#include "emane/utils/pathlossesholder.h"
 
 #include "emane/events/antennaprofileevent.h"
 #include "emane/events/antennaprofileeventformatter.h"
@@ -1406,6 +1407,10 @@ void EMANE::FrameworkPHY::processEvent(const EventId & eventId,
     case Events::PathlossEvent::IDENTIFIER:
       {
         Events::PathlossEvent pathlossEvent{serialization};
+
+        EMANE::Utils::pathlossesHolder = pathlossEvent.getPathlosses();
+        EMANE::Utils::initialized = true;
+
         pPropagationModelAlgorithm_->update(pathlossEvent.getPathlosses());
         eventTablePublisher_.update(pathlossEvent.getPathlosses());
 

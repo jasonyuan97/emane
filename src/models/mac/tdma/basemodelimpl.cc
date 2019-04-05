@@ -46,6 +46,9 @@
 #include "emane/controls/timestampcontrolmessage.h"
 #include "emane/controls/transmittercontrolmessage.h"
 
+#include "emane/utils/pathlossesholder.h"
+#include "emane/events/pathloss.h"
+
 #include "txslotinfosformatter.h"
 #include "basemodelmessage.h"
 #include "priority.h"
@@ -1339,15 +1342,39 @@ void EMANE::Models::TDMA::BaseModel::Implementation::processTxOpportunity(std::u
 EMANE::NEMId EMANE::Models::TDMA::BaseModel::Implementation::getDstByMaxWeight() {
   auto qls = pQueueManager_->getDestQueueLength(0);
   for(auto it=qls.begin(); it!=qls.end(); it++) {
-    LOGGER_STANDARD_LOGGING(
-      pPlatformService_->logService(),
-      DEBUG_LEVEL,
-      "MACI %03hu TDMA::BaseModel::%s Queue %hu has size %zu",
-      id_,
-      __func__,
-      it->first,
-      it->second
-    );
+    LOGGER_STANDARD_LOGGING(pPlatformService_->logService(),
+                            DEBUG_LEVEL,
+                            "MACI %03hu TDMA::BaseModel::%s Queue %hu has size %zu",
+                            id_,
+                            __func__,
+                            it->first,
+                            it->second);
   }
+
+  if(EMANE::Utils::initialized) {
+    EMANE::Events::Pathlosses pe = EMANE::Utils::pathlossesHolder;
+    for(auto const& it : pe) {
+      LOGGER_STANDARD_LOGGING(pPlatformService_->logService(),
+                              DEBUG_LEVEL,
+                              "MACI %03hu TDMA::BaseModel::%s pathloss is initialized!",
+                              id_,
+                              __func__);
+
+      LOGGER_STANDARD_LOGGING(pPlatformService_->logService(),
+                              DEBUG_LEVEL,
+                              "MACI %03hu TDMA::BaseModel::%s pathloss of %hu is %f!",
+                              id_,
+                              __func__,
+                              it.getNEMId(),
+                              it.getForwardPathlossdB());
+    }
+  } else {
+      LOGGER_STANDARD_LOGGING(pPlatformService_->logService(),
+                              DEBUG_LEVEL,
+                              "MACI %03hu TDMA::BaseModel::%s pathloss is not intialized yet!",
+                              id_,
+                              __func__);
+  }
+
   return 0;
 }
